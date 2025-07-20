@@ -216,7 +216,7 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "15.0.0"
-  x_dialog:
+  x_overlay:
     dependency: "direct main"
     description:
       path: ".."

@@ -7,11 +7,16 @@ class XOverlayEntry {
 
   bool get isShown => _overlayEntry != null;
 
+  /// [isAbsorbPointer] 拦截事件，为true时，[dismissOutside] 无效
   void show({
     required Widget child,
     required TransitionBuilder transitionBuilder,
     required Duration showAnimationDuration,
     required Duration hideAnimationDuration,
+    required bool dismissOutside,
+    required bool dismissBackpress,
+    required bool isAbsorbPointer,
+    required Color backgroundColor,
   }) {
     if (_overlayEntry == null) {
       _visibleController = StreamController<bool>();
@@ -23,6 +28,13 @@ class XOverlayEntry {
             transitionBuilder: transitionBuilder,
             showAnimationDuration: showAnimationDuration,
             hideAnimationDuration: hideAnimationDuration,
+            dismissOutside: dismissOutside,
+            dismissBackpress: dismissBackpress,
+            isAbsorbPointer: isAbsorbPointer,
+            backgroundColor: backgroundColor,
+            dismiss: () {
+              dismiss();
+            },
             child: child,
           );
         },
@@ -53,13 +65,22 @@ class _XOverlayEntry extends StatefulWidget {
   final Duration showAnimationDuration;
   final Duration hideAnimationDuration;
   final Stream<bool> visibleStream;
-
+  final bool dismissOutside;
+  final bool dismissBackpress;
+  final bool isAbsorbPointer;
+  final void Function() dismiss;
+  final Color backgroundColor;
   const _XOverlayEntry({
     required this.transitionBuilder,
     required this.showAnimationDuration,
     required this.hideAnimationDuration,
     required this.child,
     required this.visibleStream,
+    required this.dismissOutside,
+    required this.dismissBackpress,
+    required this.isAbsorbPointer,
+    required this.dismiss,
+    required this.backgroundColor,
   });
 
   @override
@@ -104,13 +125,34 @@ class _XOverlayEntryState extends State<_XOverlayEntry>
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    Widget child = Material(
       type: MaterialType.transparency,
-      child: SafeArea(
-        child: IgnorePointer(
-          child: widget.transitionBuilder(context, animation, widget.child),
+      color: widget.backgroundColor,
+      child: PopScope(
+        canPop: widget.dismissBackpress,
+        onPopInvokedWithResult: (value, result){
+          if (widget.dismissBackpress) {
+            widget.dismiss();
+          }
+        },
+        child: GestureDetector(
+          onTap: () {
+            if (widget.dismissBackpress) {
+              widget.dismiss();
+            }
+          },
+          child: SafeArea(
+            child: IgnorePointer(
+              child: widget.transitionBuilder(context, animation, widget.child),
+            ),
+          ),
         ),
       ),
     );
+    if (widget.isAbsorbPointer) {
+      return AbsorbPointer(absorbing: true, child: child);
+    } else {
+      return child;
+    }
   }
 }
