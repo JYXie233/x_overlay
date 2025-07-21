@@ -4,6 +4,7 @@ typedef TransitionBuilder =
     Widget Function(
       BuildContext context,
       Animation<double> aniamtion,
+      bool visible,
       Widget child,
     );
 

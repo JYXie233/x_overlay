@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:x_overlay/x_overlay.dart';
 
 void main() {
-  XLoading.configuration(builder: (context, argument){
+  XLoading.configuration(builder: (context, argument) {
     return Center(
       child: Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.white,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            Text("${argument}"),
+          ],
+        ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(),
-          Text("${argument}"),
-        ],
-      ),
-    ),
     );
   });
   runApp(const MyApp());
@@ -76,34 +76,36 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() async{
-   XDialog.show(builder: (context){
+  void _incrementCounter() async {
+    XDialog.show(builder: (context) {
       return AlertDialog(
         title: Text("Hello"),
         actions: [
           TextButton(
-            onPressed: (){
+            onPressed: () {
               print("XDialog.isDialogShown:${XDialog.isDialogShown}");
               Navigator.of(context).pop();
             },
             child: Text("Cancel"),
           ),
           TextButton(
-            onPressed: (){
+            onPressed: () {
               XToast.showToast(text: "Hello");
               XToast.showToast(text: "Hello22");
-              XToast.show(child: Text("Hello2"), duration: Duration(seconds: 2));
-              XToast.show(child: Text("Hello3"), duration: Duration(seconds: 3));
+              XToast.show(
+                  child: Text("Hello2"), duration: Duration(seconds: 2));
+              XToast.show(
+                  child: Text("Hello3"), duration: Duration(seconds: 3));
             },
             child: Text("Show Toast"),
           ),
           TextButton(
-            onPressed: (){
+            onPressed: () {
               XLoading.show();
-              Future.delayed(Duration(seconds: 2), (){
+              Future.delayed(Duration(seconds: 2), () {
                 XLoading.show(argument: "XHHHH");
-                Future.delayed(Duration(seconds: 2), (){
-                  XLoading.hide();
+                Future.delayed(Duration(seconds: 2), () {
+                  XLoading.dismiss();
                 });
               });
             },
@@ -112,12 +114,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       );
     });
-    XDialog.show(builder: (context){
+    XDialog.show(builder: (context) {
       return AlertDialog(
         title: Text("Hello1"),
         actions: [
           TextButton(
-            onPressed: (){
+            onPressed: () {
               print("XDialog.isDialogShown:${XDialog.isDialogShown}");
               Navigator.of(context).pop();
             },
@@ -179,27 +181,29 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-             TextButton(
-            onPressed: (){
-              XToast.showToast(text: "Hello");
-              XToast.showToast(text: "Hello22");
-              XToast.show(child: Text("Hello2"), duration: Duration(seconds: 2));
-              XToast.show(child: Text("Hello3"), duration: Duration(seconds: 3));
-            },
-            child: Text("Show Toast"),
-          ),
-          TextButton(
-            onPressed: (){
-              XLoading.show();
-              Future.delayed(Duration(seconds: 2), (){
-                XLoading.show(argument: "XHHHH");
-                Future.delayed(Duration(seconds: 2), (){
-                  XLoading.hide();
+            TextButton(
+              onPressed: () {
+                XToast.showToast(text: "Hello");
+                XToast.showToast(text: "Hello22");
+                XToast.show(
+                    child: Text("Hello2"), duration: Duration(seconds: 2));
+                XToast.show(
+                    child: Text("Hello3"), duration: Duration(seconds: 3));
+              },
+              child: Text("Show Toast"),
+            ),
+            TextButton(
+              onPressed: () {
+                XLoading.show();
+                Future.delayed(Duration(seconds: 2), () {
+                  XLoading.show(argument: "XHHHH");
+                  Future.delayed(Duration(seconds: 2), () {
+                    XLoading.dismiss();
+                  });
                 });
-              });
-            },
-            child: Text("Show Loading"),
-          ),
+              },
+              child: Text("Show Loading"),
+            ),
           ],
         ),
       ),

@@ -7,6 +7,8 @@ class XOverlayEntry {
 
   bool get isShown => _overlayEntry != null;
 
+  void Function()? onDismissed;
+
   /// [isAbsorbPointer] 拦截事件，为true时，[dismissOutside] 无效
   void show({
     required Widget child,
@@ -45,16 +47,16 @@ class XOverlayEntry {
     }
   }
 
-  void dismiss() {
+  Future dismiss() async {
     if (_overlayEntry != null && _overlayEntry!.mounted) {
+      onDismissed?.call();
       _visibleController.add(false);
       _visibleController.close();
-      Future.delayed(
+      await Future.delayed(
         _hideAnimationDuration ?? Duration(milliseconds: 300),
-      ).then((_) {
-        _overlayEntry?.remove();
-        _overlayEntry = null;
-      });
+      );
+      _overlayEntry?.remove();
+      _overlayEntry = null;
     }
   }
 }
@@ -98,7 +100,7 @@ class _XOverlayEntryState extends State<_XOverlayEntry>
     duration: Duration(milliseconds: 300),
   );
   late Animation<double> animation;
-
+  bool _visible = true;
   @override
   void initState() {
     streamSubscription = widget.visibleStream.listen(onVisibleChanged);
@@ -110,15 +112,20 @@ class _XOverlayEntryState extends State<_XOverlayEntry>
   }
 
   void onVisibleChanged(bool visible) {
+    _visible = visible;
+    setState(() {});
     if (visible) {
+      animationController.duration = widget.showAnimationDuration;
       animationController.forward();
     } else {
+      animationController.duration = widget.hideAnimationDuration;
       animationController.reverse();
     }
   }
 
   @override
   void dispose() {
+    animationController.dispose();
     streamSubscription?.cancel();
     super.dispose();
   }
@@ -126,11 +133,13 @@ class _XOverlayEntryState extends State<_XOverlayEntry>
   @override
   Widget build(BuildContext context) {
     Widget child = Material(
-      type: MaterialType.transparency,
+      type: widget.backgroundColor == Colors.transparent
+          ? MaterialType.transparency
+          : MaterialType.canvas,
       color: widget.backgroundColor,
       child: PopScope(
         canPop: widget.dismissBackpress,
-        onPopInvokedWithResult: (value, result){
+        onPopInvokedWithResult: (value, result) {
           if (widget.dismissBackpress) {
             widget.dismiss();
           }
@@ -143,7 +152,12 @@ class _XOverlayEntryState extends State<_XOverlayEntry>
           },
           child: SafeArea(
             child: IgnorePointer(
-              child: widget.transitionBuilder(context, animation, widget.child),
+              child: widget.transitionBuilder(
+                context,
+                animation,
+                _visible,
+                widget.child,
+              ),
             ),
           ),
         ),

@@ -1,10 +1,10 @@
 library x_overlay;
 
-
 import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:synchronized/synchronized.dart';
 
 part 'src/x_navigator_observer.dart';
