@@ -1,7 +1,5 @@
 part of x_overlay;
 
-
-
 class XDialogCompanion extends _XNavigatorObserver {
   final Lock _lock = Lock();
 
@@ -22,7 +20,7 @@ class XDialogCompanion extends _XNavigatorObserver {
   }) async {
     return await _lock.synchronized(() async {
       BuildContext context = _findBuildContext()!;
-      return showDialog(
+      return await showDialog(
         context: context,
         builder: builder,
         barrierDismissible: barrierDismissible,
